@@ -1,5 +1,6 @@
 plugins {
 	id 'groovy'
+	id 'application'
 }
 
 repositories {
@@ -9,3 +10,10 @@ repositories {
 dependencies {
     compile 'org.codehaus.groovy:groovy-all:2.4.15'
 }
+
+mainClassName = 'dev.improvement.Main'
+
+run {
+	standardInput = System.in
+}
+

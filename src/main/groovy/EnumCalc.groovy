@@ -63,7 +63,7 @@ BasicMath.values().each {
 
 
 while(!end) {
-	def line = cons.readLine(">> ")
+	def line = dev.improvement.Util.prompt()
 	if(line == null || line.isEmpty()){
 		continue
 	}
