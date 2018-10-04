@@ -11,13 +11,11 @@ class EtchASketch {
 	 * Print the screen to out, using 'X' for true and ' ' for false.
 	 */
 	void print(Appendable out){
-		for(int i = 0; i < screen.size(); i++){
-			def row = screen[i]
+		for(row in screen){
 			for(cell in row){
 				cell ? out.append('X') : out.append(' ')
 			}
-			if(i < screen.size() - 1)
-				out.append(System.getProperty("line.separator"))
+			out.append(System.getProperty("line.separator"))
 		}
 	}
 
