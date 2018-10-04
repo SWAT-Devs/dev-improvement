@@ -6,6 +6,7 @@ import groovy.transform.*
 @CompileStatic
 class EtchASketchTest {
 	EtchASketch eas = new EtchASketch()
+
 	@Test
 	void test_print() {
 		eas.screen = [[true, false], [false, true]]
@@ -13,7 +14,7 @@ class EtchASketchTest {
 		def ls = System.lineSeparator()
 		def sb = new StringBuilder()
 		eas.print(sb)
-		Assert.assertEquals("2 x 2", "X $ls X", sb.toString())
+		Assert.assertEquals("2 x 2", "X $ls X".toString(), sb.toString())
 	}
 
 	@Test
