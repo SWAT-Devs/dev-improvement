@@ -38,6 +38,7 @@ class EtchASketch {
 	 */
 	void run(Reader reader){
 		screen = new ArrayList<>()
+		currLoc = new Point();
 		screen.add(new ArrayList<>())
 		screen[0][0] = true
 		
@@ -45,7 +46,31 @@ class EtchASketch {
 		while((input = reader.read()) > -1){
 			Direction d = Direction.findByChar(input)
 			currLoc.moveBy(d.movement)
+			updateScreen()
 		}
+	}
+	
+	void updateScreen(){
+		List<Boolean> row;
+		if(currLoc.row >= screen.size()){
+			row = new ArrayList<>();// newRow(screen[0].size())
+			screen.add(row)
+		}
+		else
+			row = screen[currLoc.row]
+		
+		while(row.size() <= currLoc.col)
+			row.add(false)
+		
+		screen[currLoc.row][currLoc.col] = true;
+	}
+	
+	List<Boolean> newRow(int size){
+		List<Boolean> r = new ArrayList<>();
+		for (int i = 0; i < size; i++){
+			r.add(false);
+		}
+		return r;
 	}
 
 	enum Direction{
@@ -76,19 +101,19 @@ class EtchASketch {
 	}
 
 	static class Point{
-		int x = 0
-		int y = 0
+		int col = 0
+		int row = 0
 
 		Point(){}
 
-		Point(int x, int y){
-			this.x = x
-			this.y = y
+		Point(int col, int row){
+			this.col = col
+			this.row = row
 		}
 
 		public void moveBy(Point p){
-			this.x += p.x
-			this.y += p.y
+			this.col += p.col
+			this.row += p.row
 		}
 	}
 }
