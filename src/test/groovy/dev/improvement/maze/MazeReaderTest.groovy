@@ -45,6 +45,8 @@ class MazeReaderTest {
 		p1.move South
 		assertTrue(p1.hasWon())
 
+		maze.display(System.out, p1)
+
 		def p2 = maze.start()
 		p2.move South
 		assertValidMoves(p2, North, South)
@@ -53,10 +55,14 @@ class MazeReaderTest {
 		p2.move East
 		assertValidMoves(p2, West, East)
 		p2.move East
+		p2.move West
+
+		maze.display(System.out, p2)
 	}
 
 	IPlayer play(String str) {
 		def maze = mr.read(new StringReader(str))
+		maze.display(System.out)
 		maze.start()
 	}
 
