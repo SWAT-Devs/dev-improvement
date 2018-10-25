@@ -23,4 +23,5 @@ interface IPlayer {
      * Is the player standing on the finish cell.
      */
 	boolean hasWon()
+
 }
