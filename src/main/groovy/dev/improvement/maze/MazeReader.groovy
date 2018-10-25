@@ -1,5 +1,8 @@
 package dev.improvement.maze
 
+import static dev.improvement.maze.Direction.*
+
+@groovy.transform.CompileStatic
 /**
  * Reads in a maze from lines of text.
  * - lines represent the vertical axis of the maze with the top of the file
@@ -12,145 +15,138 @@ package dev.improvement.maze
  * - anything else is seen as an open cell
  */
 class MazeReader {
+	public static final char WALL = '#'
+	public static final char START = 'O'
+	public static final char FINISH = 'X'
+
 	/**
      * Create a maze from the input.
      */
 	IMaze read(Reader reader){
-		String line;
-		Maze m = new Maze();
-		while((line = reader.readLine()) != null) {
-			if(!line.isEmpty()){
-				List<Character> charList = Arrays.asList(line.toCharArray())
-				m.addToMaze(charList)
-				if(!m.isValid())
-					print "not valid"
+		def m = new Maze()
+		reader.eachLine {line, y ->
+			boolean[] row = new boolean[line.length()]
+			for(int x = 0; x<line.length(); x++){
+				row[x] = line[x] != WALL
+				if(line[x] == START){
+					m.startX = x
+					m.startY = y-1
+				}
+				else if(line[x] == FINISH) {
+					m.finishX = x
+					m.finishY = y-1
+				}	
 			}
+			m.board << row
 		}
-
 		return m
 	}
 
-	static class Maze implements IMaze{
-		List<List<Character>> theMaze = new ArrayList<>();
-		public Point startPoint;
-		public Point target;
+	private static class Maze implements IMaze {
+		List<boolean[]> board = []
+		int startX = -1
+		int startY = -1
+		int finishX = -1
+		int finishY = -1
 
-		public void addToMaze(List<Character> chars){
-			theMaze.add(chars);
-			int i = chars.indexOf('O' as char)
-			if(i > -1)
-				startPoint = new Point(i, theMaze.size()-1)
-			i = chars.indexOf('X' as char)
-			if(i > -1)
-				target = new Point(i, theMaze.size()-1)
-		}
-
-		public boolean isValid(){
-			return true;
-		}
-
-		public Point getStartLoc(){
-			return startPoint
-		}
-
-		public char getCharAt(Point p){
-			return theMaze[p.y][p.x]
+		@Override
+		IPlayer start() {
+			new Player(this)
 		}
 
 		@Override
-		IPlayer start(){
-			return new Player(this)
-		}
-
-		@Override
-		void display(Appendable out){
-
+		void display(Appendable out) {
+			display(out, null)
 		}
 
 		@Override
 		void display(Appendable out, IPlayer player){
-
+			def render = new char[board.size()][]
+			for(int y =0; y < board.size(); y++){
+				render[y] = new char[board[y].length]
+				for(int x = 0; x < board[y].length; x++){
+					render[y][x] = board[y][x] ? ((char)' ') : WALL
+				}
+			}
+			if(player != null){
+				def temp = new Player(this)
+				player.movesTaken.each {
+					temp.move it
+					render[temp.y][temp.x] = render[temp.y][temp.x] >= (char)'1' ? (char)((int)render[temp.y][temp.x] + 1) : (char)'1'
+				}
+			}
+			render[startY][startX] = START
+			render[finishY][finishX] = FINISH
+			def ln = System.lineSeparator()
+			for(int y =0; y< render.length; y++){
+				for(int x = 0; x<render[y].length; x++){
+					out.append(render[y][x])
+				}
+				out.append(ln)
+			}
 		}
 	}
 
-	static class Point{
-		public int x
-		public int y
-		Point(x, y){
-			this.x = Math.max(0, x)
-			this.y = Math.max(0, y)
-		}
+	private static class Player implements IPlayer {
+		final Maze maze
+		int x
+		int y
+		final List<Direction> moves = []
 
-		@Override
-		public String toString(){
-			return "[$x, $y]"
-		}
-
-		@Override
-		public boolean equals(Object p2){
-			if(!(p2 instanceof Point))
-				return false
-			Point p = (Point) p2
-			return p.x == this.x && p.y == this.y
-		}
-	}
-
-	static class Player implements IPlayer{
-		private List<Direction> moves = new ArrayList<>()
-		private Maze maze;
-		private Point currLoc
-
-		public Player(Maze maze){
+		Player(Maze maze){
 			this.maze = maze
-			currLoc = maze.getStartLoc()
+			x = maze.startX
+			y = maze.startY
 		}
-
+		
 		@Override
 		Iterable<Direction> getMovesTaken(){
-			return moves
+			new ArrayList<>(moves)
 		}
 
+		boolean testAndSet(Direction dir, boolean shouldSet){
+			int newX = x
+			int newY = y
+			switch(dir){
+				case North:
+					newY--
+					break
+				case South:
+					newY++
+					break
+				case East:
+					newX++
+					break
+				case West:
+					newX--
+					break
+				default:
+					throw new IllegalArgumentException("Unknown direction $dir")
+			}
+			boolean valid = newX >= 0 && newY >= 0 && newY < maze.board.size() && newX < maze.board[newY].length && maze.board[newY][newX]
+			if(valid && shouldSet){
+				x = newX
+				y = newY
+			}
+			return valid
+		}
+		
 		@Override
 		boolean canMove(Direction direction){
-			Point nextPoint = getNext(direction);
-
-			char c = maze.getCharAt(nextPoint)
-			return c != '#'
+			return testAndSet(direction, false)
 		}
-
+		
 		@Override
 		void move(Direction direction){
-			if(canMove(direction)){
-				currLoc = getNext(direction)
-				moves.add(direction)
+			if(!testAndSet(direction, true)){
+				throw new IllegalArgumentException("Invalid move direction $direction")
 			}
+			moves << direction
 		}
-
-		private Point getNext(Direction direction){
-			Point nextPoint;
-			switch(direction) {
-				case Direction.North:
-					nextPoint = new Point(currLoc.x, currLoc.y - 1)
-				break
-				case Direction.South:
-					nextPoint = new Point(currLoc.x, currLoc.y + 1)
-				break
-				case Direction.East:
-					nextPoint = new Point(currLoc.x + 1, currLoc.y)
-				break;
-				case Direction.West:
-					nextPoint = new Point(currLoc.x - 1, currLoc.y)
-				break
-			}
-			return nextPoint
-		}
-
+		
 		@Override
 		boolean hasWon(){
-			println currLoc
-			println maze.target
-			return currLoc.equals(maze.target)
+			return x == maze.finishX && y == maze.finishY	
 		}
 	}
-
 }
