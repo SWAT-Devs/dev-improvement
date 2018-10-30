@@ -3,19 +3,15 @@ plugins {
 	id 'application'
 }
 
-repositories {
-    mavenCentral()
-}
+repositories { mavenCentral() }
 
 dependencies {
-    compile 'org.codehaus.groovy:groovy-all:2.4.15'
-	testCompile 'junit:junit:4.12'
+	implementation 'org.codehaus.groovy:groovy-all:2.5.3'
+	testImplementation 'junit:junit:4.12'
 }
 
 mainClassName = 'dev.improvement.Main'
 
-run {
-	standardInput = System.in
-}
+run { standardInput = System.in }
 
 
