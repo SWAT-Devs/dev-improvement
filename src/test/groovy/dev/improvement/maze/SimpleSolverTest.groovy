@@ -8,9 +8,10 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
+@groovy.transform.CompileStatic
 class SimpleSolverTest {
 		final IMaze maze
-		SimpleSolverTest(String mazeString){
+		SimpleSolverTest(String mazeString, String name){
 				maze = new MazeReader().read(new StringReader(mazeString))
 		}
 
@@ -26,28 +27,28 @@ class SimpleSolverTest {
 				assertTrue("Solver has won", p.hasWon())
 		}
 
-		@Parameters
-		static List<String> mazes() {
-				[
-						"""
+		@Parameters(name = "{index}: {1}")
+		static List<Object[]> mazes() {
+				def mazes = [
+						["""
 ###
 #O#
 # #
-#X#""",
-						"""
+#X#""", "Simple"].toArray(),
+						["""
 #####
 #O  #
 ### #
 #X  #
-#####""",
-						"""
+#####""", "C Shape"].toArray(),
+						["""
 ##########
 #X       #
 #        #
 #        #
 #       O#
-##########""",
-						"""
+##########""", "Big O"].toArray(),
+						["""
 #####
 # #X#
 #   #
@@ -55,8 +56,8 @@ class SimpleSolverTest {
 #   #
 # ###
 #  O#
-#####""",
-						"""
+#####""", "Dead ends"].toArray(),
+						["""
 ############################X###############################
 #                   ########                               #
 ################### ################ ######## ######### ####
@@ -86,7 +87,8 @@ class SimpleSolverTest {
 #                            #                           # #
 ############################ ############################# #
 #                           O                              #
-############################################################"""
+############################################################""", "Big Guy"].toArray()
 				]
+				return mazes
 		}
 }
