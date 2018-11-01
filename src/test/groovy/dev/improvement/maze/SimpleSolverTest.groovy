@@ -22,7 +22,7 @@ class SimpleSolverTest {
 				def start = System.currentTimeMillis()
 				s.solve(p)
 				def dur = System.currentTimeMillis() - start
-				println "Duration $dur ms."
+				println "Duration $dur ms. Moves taken ${p.movesTaken.size()}"
 				maze.display(System.out, p)
 				assertTrue("Solver has won", p.hasWon())
 		}
@@ -87,8 +87,11 @@ class SimpleSolverTest {
 #                            #                           # #
 ############################ ############################# #
 #                           O                              #
-############################################################""", "Big Guy"].toArray()
+############################################################""", "Big Guy"].toArray(),
 				]
+				SimpleSolverTest.getResource('mazes.txt').eachLine{m ->
+						mazes << [SimpleSolverTest.getResource(m).getText(), m].toArray()
+				}
 				return mazes
 		}
 }
