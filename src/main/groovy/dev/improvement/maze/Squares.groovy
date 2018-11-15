@@ -1,6 +1,16 @@
 package dev.improvement.maze
 
-class Squares {
+import dev.improvement.ICommand
+
+class Squares implements ICommand{
+	@Override
+	void run(List<String> args) {
+		for(def arg in args) {
+			printSquares(arg.toInteger(), System.out)
+			println()
+		}
+	}
+	
 	void printSquares(int dimension, Appendable out) {
 		//TODO do stuff
 		for(int i = 0; i < dimension; i++) {
