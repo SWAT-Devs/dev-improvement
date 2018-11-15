@@ -7,44 +7,65 @@ import org.junit.*
 class SquaresTest {
 	@Test
 	void test_3x3() {
-		def sb = new StringBuffer()
-		printSquares(3, sb);
-		assertEquals("""###
+		test 3, """###
 # #
-###""", sb.toString())
+###"""
 	}
 
 	@Test
 	void test_5x5() {
-		def sb = new StringBuffer()
-		printSquares(5, sb);
-		assertEquals("""#####
+		test 5, """#####
 #   #
 # # #
 #   #
-#####""", sb.toString())
+#####"""
 	}
 
-	void printSquares(int dimension, Appendable out) {
-		//TODO do stuff
-		for(int i = 0; i < dimension; i++) {
-			if(i == 0 || i == dimension-1) {
-				out.append("#"*dimension)
-			}
-			else {
-				out.append("#")
-				if(i % 2 == 0) {
-					out.append(" ")
-					out.append("#")
-					out.append(" ")
-				} else {	
-					out.append(" "*(dimension-2))
-				}
-				out.append("#")
-			}
-			if(i < dimension-1) {
-				out.append("\n")
-			}
-		}
+	@Test
+	void test_7x7() {
+		test 7, """#######
+#     #
+# ### #
+# # # #
+# ### #
+#     #
+#######"""
+	}
+
+	@Test
+	void test_9x9() {
+		test 9, """#########
+#       #
+# ##### #
+# #   # #
+# # # # #
+# #   # #
+# ##### #
+#       #
+#########"""
+	}
+
+	@Test
+	void test_11x11() {
+		test 11, """###########
+#         #
+# ####### #
+# #     # #
+# # ### # #
+# # # # # #
+# # ### # #
+# #     # #
+# ####### #
+#         #
+###########"""
+	}
+
+	def test(int d, String expected) {
+		def sb = new StringBuffer()
+		def sq = new Squares()
+		sq.printSquares(d, sb);
+    println "$d x $d"
+    println sb
+		assertEquals("$d x $d", expected, sb.toString())
 	}
 }
