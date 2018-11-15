@@ -1,25 +1,24 @@
 package dev.improvement.maze
 
+@groovy.transform.CompileStatic
 class Squares {
 	void printSquares(int dimension, Appendable out) {
-		//TODO do stuff
-		for(int i = 0; i < dimension; i++) {
-			if(i == 0 || i == dimension-1) {
-				out.append("#"*dimension)
+		def div = dimension / 2
+		for(int y = 0; y < dimension; y++){
+			if(y > 0){
+				out << '\n'
 			}
-			else {
-				out.append("#")
-				if(i % 2 == 0) {
-					out.append(" ")
-					out.append("#")
-					out.append(" ")
-				} else {	
-					out.append(" "*(dimension-2))
+			for(int x = 0; x < dimension; x++) {
+				if((y % 2 == 0 && (x % 2 == 0
+													 ||(x >= y && x < dimension - y)
+													 ||(y > div && x < y && x >= dimension - y)))
+					 ||(x % 2 == 0 && ((y >= x && y < dimension - x)
+														 ||(x > div && y < x && y >= dimension - x)))){
+					out << '#'
 				}
-				out.append("#")
-			}
-			if(i < dimension-1) {
-				out.append("\n")
+				else {
+					out << ' '
+				}
 			}
 		}
 	}
