@@ -13,6 +13,9 @@ class Squares implements ICommand{
 	}
 	
 	void printSquares(int dimension, Appendable out) {
+		if(dimension % 2 ==0){
+			dimension = dimension - 1
+		}
 		def div = dimension / 2
 		for(int y = 0; y < dimension; y++){
 			if(y > 0){
