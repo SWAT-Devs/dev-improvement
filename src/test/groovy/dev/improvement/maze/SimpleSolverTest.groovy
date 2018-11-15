@@ -15,7 +15,7 @@ class SimpleSolverTest {
 				maze = new MazeReader().read(new StringReader(mazeString))
 		}
 
-		@Test
+	@Test(timeout=30_000L)
 		void test_simple_solver() {
 				def s = new SimpleSolver()
 				def p = maze.start()
