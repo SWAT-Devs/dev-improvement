@@ -1,7 +1,17 @@
 package dev.improvement.maze
 
+import dev.improvement.ICommand
+
 @groovy.transform.CompileStatic
-class Squares {
+class Squares implements ICommand{
+	@Override
+	void run(List<String> args) {
+		for(def arg in args) {
+			printSquares(arg.toInteger(), System.out)
+			println()
+		}
+	}
+	
 	void printSquares(int dimension, Appendable out) {
 		def div = dimension / 2
 		for(int y = 0; y < dimension; y++){
