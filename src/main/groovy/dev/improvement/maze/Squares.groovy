@@ -25,19 +25,33 @@ class Squares implements ICommand{
 		int mid = (dimension / 2 ) + 1
 
 		for(int i = 0; i < dimension; i++) {
-			int x = i % 2
+			int y = i % 2
 			for(int j = 0; j < dimension; j++){
-				int y = j % 2
+				int x = j % 2
 				if(x == 0 && y == 0){
 					out.append("#")
 				}
-				else if (x != 0 && y != 0){
-					out.append(" ")
+				else if (i == 0 || j == 0){
+					out.append("#")
+				}
+				else if(j >= i && j < dimension-i && y == 0) {
+					out.append("#")
+				}
+				else if(i >= j && i < dimension-j && x == 0) {
+					out.append("#")
+				}
+				else if(j <= i && j >= dimension-i && y == 0) {
+					out.append("#")
+				}
+				else if(i <= j && i >= dimension-j && x == 0) {
+					out.append("#")
 				}
 				else{
-
+					out.append(" ")
 				}
 			}
+			if(i != dimension-1)
+				out.append("\n")
 
 			// if(i == 0 || i == dimension-1) {
 			// 	out.append("#"*dimension)
