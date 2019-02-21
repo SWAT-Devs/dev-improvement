@@ -18,6 +18,53 @@ class SavingTheUniverseAgainTest {
   }
 
   int howManySwaps(int d, String p) {
+    int swapCount = 0;
+
+    char[] cmd = p.toCharArray()
+    
+    if(strength(cmd) <= d)
+      return swapCount;
+
+    int cntS = 0;
+    for(int i=0; i< cmd.length; i++)
+      if(cmd[i] == 'S')
+        cntS++
+
+    if(cntS > d)
+      return -1
+
+    while(swap(cmd)){
+      swapCount++
+      if(strength(cmd) <= d)
+        return swapCount;
+    }
     -1
+  }
+  
+  boolean swap(char[] cmd){
+    int lastS = cmd.length - 1
+    for(; lastS>= 0; lastS--)
+      if(cmd[lastS] == 'S')
+        break;
+    
+    while(cmd[lastS - 1] != 'C'){
+      lastS--;
+      if(lastS == 0)
+        return false;
+    }
+    
+    cmd[lastS] = 'C';
+    cmd[lastS - 1] = 'S';
+    return true
+  }
+
+  int strength(char[] command){
+    int power = 1;
+    int total = 0;
+    for(char c : command){
+      if(c == 'C') power =power << 1;
+      if(c == 'S') total += power;
+    }
+    return total;
   }
 }
