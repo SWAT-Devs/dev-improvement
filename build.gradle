@@ -8,6 +8,7 @@ repositories { mavenCentral() }
 dependencies {
 	implementation 'org.codehaus.groovy:groovy-all:2.5.3'
 	testImplementation 'junit:junit:4.12'
+  testImplementation 'org.spockframework:spock-core:1.2-groovy-2.5'
 }
 
 mainClassName = 'dev.improvement.Main'
