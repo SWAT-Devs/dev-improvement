@@ -7,6 +7,62 @@ import spock.lang.*
  * @see https://www.youtube.com/watch?v=qEKNFOaGQcc
  */
 class GraphOfThronesTest extends Specification {
+  def 'Ballanced: A ++ B, B ++ C, A ++ C'() {
+    when:
+      def g = new Graph().friends('A', 'B').friends('B', 'C').friends('A', 'C')
+    then:
+      isBallanced(g)
+  }
+
+  def 'Ballanced: A -- B, B -- C, A ++ C'(){
+    when:
+      def g = new Graph().enemies('A', 'B').enemies('B', 'C').friends('A', 'C')
+    then:
+      isBallanced(g)
+  }
+
+  def 'Unballanced: A -- B, B ++ C, A ++ C'(){
+    when:
+      def g = new Graph().enemies('A', 'B').friends('B', 'C').friends('A', 'C')
+    then:
+      !isBallanced(g)
+  }
+
+  def 'Unballanced: A -- B, B -- C, A -- C'() {
+    when:
+      def g = new Graph().enemies('A', 'B').enemies('B', 'C').enemies('A', 'C')
+    then:
+      !isBallanced(g)
+  }
+  def 'Justice League'() {
+    when:
+      def g = getClass().getResource('/JusticeLeague.txt').withReader { parse it }
+    then:
+      isBallanced(g)
+  }
+
+  def 'Game of Thrones'(){
+    when:
+      def g = getClass().getResource('/GoT.txt').withReader { parse it }
+    then:
+      !isBallanced(g)
+  }
+
+  boolean isBallanced(g) {
+    if(g.friends.isEmpty())
+      return false
+    
+    def enemiesVertices = g.enemies.keySet()
+    for(String vertice : enemiesVertices) {
+      for(String enemy : g.enemies.get(vertice)) {
+        for(String friendOfEnemy : g.friends.get(enemy)) {
+          if(g.friends.containsKey(vertice) && g.friends.get(vertice).contains(friendOfEnemy))
+          return false
+        }
+      }
+    }
+    return true
+  }
 
   def testTheParser() {
     when:
