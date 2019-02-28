@@ -7,6 +7,10 @@ import spock.lang.*
  * @see https://www.youtube.com/watch?v=qEKNFOaGQcc
  */
 class GraphOfThronesTest extends Specification {
+  static final String a = 'A'
+  static final String b = 'B'
+  static final String c = 'C'
+  static final String d = 'D'
   def 'Ballanced: A ++ B, B ++ C, A ++ C'() {
     when:
       def g = new Graph().friends('A', 'B').friends('B', 'C').friends('A', 'C')
@@ -34,6 +38,14 @@ class GraphOfThronesTest extends Specification {
     then:
       !isBallanced(g)
   }
+
+  def 'Unballanced: A ++ B, B -- C, A -- C, B -- D, C -- D, A -- D'() {
+    when:
+      def g = new Graph().friends(a, b).enemies(b, c).enemies(a, c).enemies(b, d).enemies(c, d).enemies(a, d)
+    then:
+      !isBallanced(g)
+  }
+  
   def 'Justice League'() {
     when:
       def g = getClass().getResource('/JusticeLeague.txt').withReader { parse it }
@@ -48,20 +60,44 @@ class GraphOfThronesTest extends Specification {
       !isBallanced(g)
   }
 
-  boolean isBallanced(g) {
-    if(g.friends.isEmpty())
+  static boolean isBallanced(g) {
+    if(!g.friends)
       return false
-    
-    def enemiesVertices = g.enemies.keySet()
-    for(String vertice : enemiesVertices) {
-      for(String enemy : g.enemies.get(vertice)) {
-        for(String friendOfEnemy : g.friends.get(enemy)) {
-          if(g.friends.containsKey(vertice) && g.friends.get(vertice).contains(friendOfEnemy))
-          return false
-        }
+    if(!g.enemies)
+      return true
+    def first = g.friends.keySet().first()
+    def group1 = findGroup(g, first)
+    def enemies = g.enemies[first]
+    if(!enemies)
+      return false
+    def group2 = findGroup(g, enemies.first())
+    if(intersects(group1, group2))
+      return false
+    return g.friends.keySet() + g.enemies.keySet() == group1 + group2
+  }
+
+  static boolean intersects(Set s1, Set s2) {
+    if(s1.size() > s2.size()) {
+      def x = s1
+      s1 = s2
+      s2 = x
+    }
+    return s1.any { s2.contains(it) }
+  }
+
+  static Set<String> findGroup(Graph g, String first){
+    def q = new LinkedList<String>()
+    def group = new HashSet<String>()
+    q << first
+    while(!q.isEmpty()){
+      def e = q.pop()
+      group << e
+      for(def f : g.friends[e]){
+        if(!group.contains(f))
+          q << f
       }
     }
-    return true
+    return group
   }
 
   def testTheParser() {
