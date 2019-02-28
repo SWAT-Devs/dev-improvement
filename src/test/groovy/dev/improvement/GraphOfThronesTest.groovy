@@ -10,14 +10,33 @@ class GraphOfThronesTest extends Specification {
 
   def testTheParser() {
     when:
-    def g = parse(new StringReader('A ++ B'))
+      def g = parse 'A ++ B'
     then:
-    g == new Graph().friends('A', 'B')
+      g == new Graph().friends('A', 'B')
+    when:
+      g = parse 'A -- B'
+    then:
+      g == new Graph().enemies('A', 'B')
+    when:
+      g = parse """A ++ B
+A -- C
+B ++ C"""
+    then:
+      g == new Graph().friends('A', 'B').enemies('A', 'C').friends('B', 'C')
   }
 
+  Graph parse(String value) { parse(new StringReader(value)) }
   Graph parse(Reader r){
     def g = new Graph()
-    println 'new graph'
+    def pattern = ~/(?<n1>[A-Za-z\s]+)\s*(?<op>(\+\+)|(\-\-))\s*(?<n2>[A-Za-z\s]+)/
+    r.eachLine { line ->
+      def m = pattern.matcher(line)
+      if(!m.find()) return
+      def n1 = m.group('n1').trim()
+      def n2 = m.group('n2').trim()
+      if(m.group('op') == '++') g.friends(n1, n2)
+      else g.enemies(n1, n2)
+    }
     return g
   }
 
