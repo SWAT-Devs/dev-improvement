@@ -1,66 +1,69 @@
 package dev.improvement
 
-import spock.lang.*
+import groovy.transform.CompileStatic
+import groovy.transform.EqualsAndHashCode
+
+import spock.lang.Specification
+
 
 /**
  * @see https://www.reddit.com/r/dailyprogrammer/comments/aqwvxo/20190215_challenge_375_hard_graph_of_thrones/
  * @see https://www.youtube.com/watch?v=qEKNFOaGQcc
  */
 class GraphOfThronesTest extends Specification {
-  static final String a = 'A'
-  static final String b = 'B'
-  static final String c = 'C'
-  static final String d = 'D'
-  def 'Ballanced: A ++ B, B ++ C, A ++ C'() {
+  def 'Balanced: A ++ B, B ++ C, A ++ C'() {
     when:
       def g = new Graph().friends('A', 'B').friends('B', 'C').friends('A', 'C')
     then:
-      isBallanced(g)
+      isBalanced(g)
   }
 
-  def 'Ballanced: A -- B, B -- C, A ++ C'(){
+  def 'Balanced: A -- B, B -- C, A ++ C'(){
     when:
       def g = new Graph().enemies('A', 'B').enemies('B', 'C').friends('A', 'C')
     then:
-      isBallanced(g)
+      isBalanced(g)
   }
 
-  def 'Unballanced: A -- B, B ++ C, A ++ C'(){
+  def 'Unbalanced: A -- B, B ++ C, A ++ C'(){
     when:
       def g = new Graph().enemies('A', 'B').friends('B', 'C').friends('A', 'C')
     then:
-      !isBallanced(g)
+      !isBalanced(g)
   }
 
-  def 'Unballanced: A -- B, B -- C, A -- C'() {
+  def 'Unbalanced: A -- B, B -- C, A -- C'() {
     when:
       def g = new Graph().enemies('A', 'B').enemies('B', 'C').enemies('A', 'C')
     then:
-      !isBallanced(g)
+      !isBalanced(g)
   }
 
-  def 'Unballanced: A ++ B, B -- C, A -- C, B -- D, C -- D, A -- D'() {
+  def 'Unbalanced: A ++ B, B -- C, A -- C, B -- D, C -- D, A -- D'() {
+    given:
+      def (a, b, c, d) = ['A', 'B', 'C', 'D']
     when:
       def g = new Graph().friends(a, b).enemies(b, c).enemies(a, c).enemies(b, d).enemies(c, d).enemies(a, d)
     then:
-      !isBallanced(g)
+      !isBalanced(g)
   }
   
   def 'Justice League'() {
     when:
       def g = getClass().getResource('/JusticeLeague.txt').withReader { parse it }
     then:
-      isBallanced(g)
+      isBalanced(g)
   }
 
   def 'Game of Thrones'(){
     when:
       def g = getClass().getResource('/GoT.txt').withReader { parse it }
     then:
-      !isBallanced(g)
+      !isBalanced(g)
   }
 
-  static boolean isBallanced(g) {
+  @CompileStatic
+  static boolean isBalanced(Graph g) {
     if(!g.friends)
       return false
     if(!g.enemies)
@@ -76,15 +79,17 @@ class GraphOfThronesTest extends Specification {
     return g.friends.keySet() + g.enemies.keySet() == group1 + group2
   }
 
+  @CompileStatic
   static boolean intersects(Set s1, Set s2) {
     if(s1.size() > s2.size()) {
       def x = s1
       s1 = s2
       s2 = x
     }
-    return s1.any { s2.contains(it) }
+    return s1.any { it in s2 }
   }
 
+  @CompileStatic
   static Set<String> findGroup(Graph g, String first){
     def q = new LinkedList<String>()
     def group = new HashSet<String>()
@@ -92,10 +97,9 @@ class GraphOfThronesTest extends Specification {
     while(!q.isEmpty()){
       def e = q.pop()
       group << e
-      for(def f : g.friends[e]){
-        if(!group.contains(f))
-          q << f
-      }
+      def friends = g.friends[e]
+      if(friends)
+        friends.stream().filter { !(it in group) }.forEach { q << it }
     }
     return group
   }
@@ -117,7 +121,10 @@ B ++ C"""
       g == new Graph().friends('A', 'B').enemies('A', 'C').friends('B', 'C')
   }
 
+  @CompileStatic
   Graph parse(String value) { parse(new StringReader(value)) }
+
+  @CompileStatic
   Graph parse(Reader r){
     def g = new Graph()
     def pattern = ~/(?<n1>[A-Za-z\s]+)\s*(?<op>(\+\+)|(\-\-))\s*(?<n2>[A-Za-z\s]+)/
@@ -132,7 +139,8 @@ B ++ C"""
     return g
   }
 
-  @groovy.transform.EqualsAndHashCode
+  @EqualsAndHashCode
+  @CompileStatic
   static class Graph {
     final Map<String, Set<String>> friends = new TreeMap<>()
     final Map<String, Set<String>> enemies = new TreeMap<>()
