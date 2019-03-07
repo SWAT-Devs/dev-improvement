@@ -34,6 +34,16 @@ class GraphOfThronesTest extends Specification {
     then:
       !isBallanced(g)
   }
+
+  def 'Unbalanced: A ++ B, B -- C, A -- C, B -- D, C -- D, A -- D'() {
+    given:
+      def (a, b, c, d) = ['A', 'B', 'C', 'D']
+    when:
+      def g = new Graph().friends(a, b).enemies(b, c).enemies(a, c).enemies(b, d).enemies(c, d).enemies(a, d)
+    then:
+      !isBallanced(g)
+  }
+
   def 'Justice League'() {
     when:
       def g = getClass().getResource('/JusticeLeague.txt').withReader { parse it }
