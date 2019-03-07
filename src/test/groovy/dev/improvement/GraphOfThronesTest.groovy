@@ -69,11 +69,12 @@ class GraphOfThronesTest extends Specification {
     if(!g.enemies)
       return true
     def first = g.friends.keySet().first()
-    def group1 = findGroup(g, first)
+    def group1 = g.friends[first] + first
     def enemies = g.enemies[first]
     if(!enemies)
       return false
-    def group2 = findGroup(g, enemies.first())
+    def firstEnemy = enemies.first()
+    def group2 = (g.friends[firstEnemy] ?: Collections.<String>emptySet()) + firstEnemy
     if(intersects(group1, group2))
       return false
     return g.friends.keySet() + g.enemies.keySet() == group1 + group2
@@ -87,21 +88,6 @@ class GraphOfThronesTest extends Specification {
       s2 = x
     }
     return s1.any { it in s2 }
-  }
-
-  @CompileStatic
-  static Set<String> findGroup(Graph g, String first){
-    def q = new LinkedList<String>()
-    def group = new HashSet<String>()
-    q << first
-    while(!q.isEmpty()){
-      def e = q.pop()
-      group << e
-      def friends = g.friends[e]
-      if(friends)
-        friends.stream().filter { !(it in group) }.forEach { q << it }
-    }
-    return group
   }
 
   def testTheParser() {
