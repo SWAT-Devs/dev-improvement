@@ -13,40 +13,68 @@ class MaximalSquareTest extends Specification {
       maximalSquare(arr) == expected
     where:
     arr                                  || expected
-    ["0111", "1111", "1111", "1111"]     || 9
-    ["0111", "1101", "0111"]             || 1
-    ["0000", "0110", "0110", "0000"]     || 4
+    ["0111", 
+     "1111", 
+     "1111", 
+     "1111"]     || 9
+    ["0111", 
+     "1101", 
+     "0111"]             || 1
+    ["0000", 
+     "0110", 
+     "0110", 
+     "0000"]     || 4
     ["10100",
      "10111",
      "11111",
      "10010"] || 4
   }
 
-  static int maximalSquare(List<String> strArr){
-    int max = 0
-    for(int r1 = 0; r1 < strArr.size() - max; r1++){
-      for(int c1 = 0; c1 < strArr[r1].size() - max; c1++) {
-        if(strArr[r1][c1] == '0') break
-        int x = 0;
-        for(int c2 = c1; c2 < strArr[r1].size() && strArr[r1][c2]=='1'; c2++)
-          x++
-        int y = 1
-        for(int r2 = r1 +1; r2 < strArr.size() && r2 - r1 < x; r2++){
-          int x1 = 0
-          for(int c3 = c1; c3 < strArr[r2].size() && c3 - c1 < x && strArr[r2][c3] == '1'; c3++){
-            x1++
-          }
-          x = Math.min(x, x1)
-          if(x1 == 0) break
-          y++
+  static int maximalSquare(List<String> strArr) {
+    int biggestSquare = 0;
+    for(int row = 0; row < strArr.size(); row++) {
+      for(int col = 0; col < strArr[row].size(); col++) {
+        if(strArr[row][column] == "1") {
+          biggestSquare = Math.max(biggestSquare, findLargestSquare(row, column)
         }
-        max = Math.max(max, Math.min(x, y))
       }
     }
-    return max * max
   }
-  
-  static int maximalSquare1(List<String> strArr) {
+
+  static int findLargestSquare(int row, int col, List<String> strArr) {
+    int maxRowDiff = 0;
+    for(int c = col+1; c < strArr[row].size(); c++) {
+      if(strArr[row][c]=="1")
+        maxRowDiff++;
+      else
+        break;
+    }
+    for(int r = row+1; r < strArr.size() && r < row+maxRowDiff; r++) {
+     for(int c = col+1; c < strArr[row].size(); c++) {
+      if(strArr[row][c]=="1")
+        maxRowDiff++;
+      else
+        break;
+      } 
+    }
+    
+
+
+    //ROW
+    int rowPrime = row;
+    int furthestRight = 1;
+    while(strArr[rowPrime][col] != "0") {
+      furthestRight++;
+    }
+    //COL
+    int colPrime = col;
+    int furthestDown = 1;
+    while(strArr[row][colPrime] != "0") {
+      furthestDown++;
+    }
+  }
+
+  static int maximalSquare(List<String> strArr) {
     def size = null;
     //Loop 1
     for(int row = 0; row < strArr.size(); row++){
