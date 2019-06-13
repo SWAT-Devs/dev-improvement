@@ -39,14 +39,15 @@ class MaximalSquareTest extends Specification {
         }
       }
     }
+    return biggestSquare;
   }
 
   static int findLargestSquare(int row, int col, List<String> strArr) {
-    int sizeOfSquare = 1;
+    int sizeOfSquare = 0;
     while(canFindSquareOfSize(row, col, strArr, sizeOfSquare)) {
       sizeOfSquare++;
     }
-    return sizeOfSquare;
+    return Math.pow(sizeOfSquare, 2);
   }
 
   static boolean canFindSquareOfSize(int row, int col, List<String> strArr, int size) {
@@ -55,6 +56,7 @@ class MaximalSquareTest extends Specification {
       return false;
     for(int rowTraverse = row; rowTraverse < row + size; rowTraverse++) {
       for(int colTraverse = col; colTraverse < col + size; colTraverse++) {
+        println "row $rowTraverse col $colTraverse FINDS ${strArr[rowTraverse][colTraverse]}" 
         if(strArr[rowTraverse][colTraverse] == '0')
           return false;
       }
