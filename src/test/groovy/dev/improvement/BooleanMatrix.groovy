@@ -125,7 +125,7 @@ class BooleanMatrix extends Specification {
 
 
 	// iterative, in place modification
-	public static List<Integer[]> updateMatrix(List<Integer[]> matrix) {
+	public static List<Integer[]> updateMatrix2(List<Integer[]> matrix) {
 
 		for(int r = 0; r < matrix.size(); r++){
 			for(int c = 0; c < matrix[r].size(); c++){
