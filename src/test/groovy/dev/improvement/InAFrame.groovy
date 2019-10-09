@@ -51,7 +51,7 @@ class InAFrame extends Specification {
 *****************************'''
 	}
 
-	char lineSep = "\n"
+	static char lineSep = "\n"
 	public String framed(String s){
 		int max = 0
 		for(String potato_seed : s.split(" ")) {
@@ -61,7 +61,7 @@ class InAFrame extends Specification {
 		return framed(s, max)
 	}
 
-	public String framed(String s, int frameWidth){
+	public String framed1(String s, int frameWidth){
 		String[] sl = s.split(" ")
 		List<String> potatoes = new ArrayList<String>()
 		for(String ss : sl) {
@@ -99,5 +99,38 @@ class InAFrame extends Specification {
 		}
 		finished_potato.append("\n" + potato_skin)
 		return finished_potato.toString()
+	}
+
+	public String framed(String s, int frameWidth){
+		String[] s1 = s.split(" ")
+		String topbottom = "*"*(frameWidth+4)
+
+		StringBuilder sb = new StringBuilder(topbottom);
+	
+		StringBuilder line = new StringBuilder("");
+		for(int i = 0; i < s1.length; i++){
+			String curr = s1[i]
+			String space = line.size() > 0 ? " " : "";
+			if(line.size() + curr.length() + space.length() <= frameWidth)
+				line.append(space).append(curr);
+			else{
+				addLine(sb, line.toString(), frameWidth);
+				line = new StringBuilder(curr);
+			}
+		}
+		if(line.size() > 0)
+			addLine(sb, line.toString(), frameWidth)
+		sb.append(lineSep).append(topbottom);
+		return sb.toString();
+	}
+
+	private static void addLine(StringBuilder sb, String line, int frameWidth){
+		sb.append(lineSep)
+		int pad = frameWidth - line.length()
+		sb.append("* ") // left border 
+		sb.append(" " * (pad / 2)) // left line padding
+		sb.append(line) // line 
+		sb.append(" " * (pad / 2 + pad%2)) // right line padding
+		sb.append(" *") // left border
 	}
 }
