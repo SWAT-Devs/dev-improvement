@@ -48,6 +48,7 @@ class ClosestEnemy extends Specification {
     }
 
     public static int closestEnemy(List<Integer[]> arr){
+        int closestEnemyDistance = 1000000
         Point iPoint;
         List<Point> targets = new ArrayList<>()
         for(int i = 0; i < arr.size(); i++){
@@ -61,10 +62,13 @@ class ClosestEnemy extends Specification {
         }
 
         for(Point t : targets){
-            int distance = t.getDistanceBetween(iPoint)
+            int distance = iPoint.getDistanceBetween(t, arr[0].size(), arr.size())
+            if(distance < closestEnemyDistance) {
+                closestEnemyDistance = distance
+            }
         }
 
-        return -1
+        return closestEnemyDistance
     }
 
     private static class Point {
@@ -76,9 +80,13 @@ class ClosestEnemy extends Specification {
             this.y = y;
         }
 
-        public int getDistanceBetween(Point other){
+        public int getDistanceBetween(Point other, int xLength, int yLength){
             int xDistance = Math.abs(x - other.x)
+            int xDistanceLoop = Math.abs(x + xLength - other.x)
+            xDistance = Math.min(xDistance, xDistanceLoop)
             int yDistance = Math.abs(y - other.y)
+            int yDistanceLoop = Math.abs(y + yLength - other.y)
+            yDistance = Math.min(yDistance, yDistanceLoop)
             return xDistance + yDistance
         }
     }
