@@ -64,11 +64,10 @@ class PathWithMaxGold extends Specification {
 
 
     private static int findBestPath(List<Integer[]> arr, int r, int c, List<Cell> visited, int value){
-        visited.add(new Cell(r, c))
-        println visited
         if(!canGo(arr, r, c, visited))
             return value;
-        
+            
+        visited.add(new Cell(r, c))
         int val = value + arr[r][c]
 
         return Math.max(findBestPath(arr, r+ 1, c, visited, val), 
